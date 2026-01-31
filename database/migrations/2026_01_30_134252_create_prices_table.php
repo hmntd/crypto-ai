@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('cryptocurrency_id')->constrained('cryptocurrencies');
             $table->double('price');
-            $table->date('recorded_at');
+            $table->timestamp('recorded_at');
             $table->timestamps();
         });
     }

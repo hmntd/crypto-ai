@@ -5,33 +5,6 @@ import { useEffect, useState } from 'react'
 import { CryptoRow } from '@/components/CryptoRow'
 import { CryptoChartPanel } from '@/components/CryptoChartPanel'
 
-const MOCK_CRYPTOS = [
-    {
-        id: 1,
-        symbol: 'BTC',
-        name: 'Bitcoin',
-        image: 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png',
-        priceToday: 42150,
-        priceYesterday: 40800,
-    },
-    {
-        id: 2,
-        symbol: 'ETH',
-        name: 'Ethereum',
-        image: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png',
-        priceToday: 2280,
-        priceYesterday: 2350,
-    },
-    {
-        id: 3,
-        symbol: 'SOL',
-        name: 'Solana',
-        image: 'https://assets.coingecko.com/coins/images/4128/large/solana.png',
-        priceToday: 96,
-        priceYesterday: 91,
-    },
-]
-
 export default function Dashboard() {
     const [cryptos, setCryptos] = useState<any[]>([])
     const [selectedCrypto, setSelectedCrypto] = useState<any | null>(null)
@@ -73,6 +46,22 @@ export default function Dashboard() {
                     )}
                 </motion.div>
 
+                <AnimatePresence>
+                    {selectedCrypto && (
+                        <motion.div
+                            className="absolute right-0 top-0 h-full w-[380px] border-l bg-background p-4 shadow-xl"
+                            initial={{ x: 400 }}
+                            animate={{ x: 0 }}
+                            exit={{ x: 400 }}
+                            transition={{ type: 'spring', stiffness: 260, damping: 25 }}
+                        >
+                            <CryptoChartPanel
+                                crypto={selectedCrypto}
+                                onClose={() => setSelectedCrypto(null)}
+                            />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         </AppLayout>
     )

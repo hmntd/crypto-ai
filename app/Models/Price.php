@@ -21,6 +21,10 @@ class Price extends Model
         'recorded_at',
     ];
 
+    protected $casts = [
+        'recorded_at' => 'datetime',
+    ];
+
     public function cryptocurrency(): BelongsTo
     {
         return $this->belongsTo(Cryptocurrency::class);

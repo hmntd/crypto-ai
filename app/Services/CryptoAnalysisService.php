@@ -181,18 +181,22 @@ class CryptoAnalysisService
     protected function parseLLMResponse(string $raw): array
     {
         try {
-            $json = $this->extractJson($raw);
-            $data = json_decode($json, true);
+            $raw = trim($raw);
 
-            if (!is_array($data)) {
-                throw new \Exception('Invalid JSON from LLM');
+            $data = json_decode($raw, true);
+
+            if (json_last_error() === JSON_ERROR_NONE && is_array($data)) {
+                return $this->normalizeLLMData($data);
             }
 
-            return [
-                'recommendation' => strtoupper($data['recommendation'] ?? 'HOLD'),
-                'confidence' => (int) ($data['confidence'] ?? 0),
-                'reason' => (string) ($data['reason'] ?? 'No reason provided.'),
-            ];
+            $json = $this->extractJsonObject($raw);
+            $data = json_decode($json, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE || !is_array($data)) {
+                throw new \Exception('Invalid JSON after extraction');
+            }
+
+            return $this->normalizeLLMData($data);
         } catch (\Throwable $e) {
             Log::error('LLM parse failed', [
                 'error' => $e->getMessage(),
@@ -205,6 +209,24 @@ class CryptoAnalysisService
                 'reason' => 'AI analysis failed to parse response.',
             ];
         }
+    }
+
+    protected function normalizeLLMData(array $data): array
+    {
+        return [
+            'recommendation' => strtoupper($data['recommendation'] ?? 'HOLD'),
+            'confidence' => max(0, min(100, (int) ($data['confidence'] ?? 0))),
+            'reason' => (string) ($data['reason'] ?? 'No reason provided.'),
+        ];
+    }
+
+    protected function extractJsonObject(string $text): string
+    {
+        if (preg_match('/\{[\s\S]*\}/', $text, $matches)) {
+            return $matches[0];
+        }
+
+        throw new \Exception('No JSON object found in LLM response');
     }
 
     /**
