@@ -19,7 +19,7 @@ export default function AppTopbarLayout({ children }: Props) {
                 <TopbarUser />
             </header>
 
-            <main className="flex-1 overflow-hidden">
+            <main className="flex-1">
                 {children}
             </main>
         </div>

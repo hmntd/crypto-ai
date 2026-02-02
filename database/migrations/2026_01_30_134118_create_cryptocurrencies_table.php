@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('symbol');
             $table->string('name');
             $table->string('image_url')->nullable();
-            $table->bigInteger('api_id');
+            $table->char('api_id', 16)->unique();
             $table->timestamps();
         });
     }

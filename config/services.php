@@ -39,5 +39,9 @@ return [
         'base_url' => env('LLM_BASE_URL', 'http://ollama:11434'),
         'model' => env('LLM_MODEL', 'llama3.2:3b'),
         'timeout' => env('LLM_TIMEOUT', 120),
+    ],
+
+    'coingecko' => [
+        'api_key' => env('COINGECKO_API_KEY'),
     ]
 ];

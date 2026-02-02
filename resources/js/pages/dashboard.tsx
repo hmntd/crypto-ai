@@ -24,7 +24,7 @@ export default function Dashboard() {
         <AppLayout>
             <Head title="Crypto Dashboard" />
 
-            <div className="relative flex h-[calc(100vh-4rem)] overflow-hidden">
+            <div className="relative flex h-[calc(100vh-4rem)]">
                 <motion.div
                     className="flex w-full max-w-4xl flex-col gap-3 p-6 mx-auto"
                     animate={{ x: selectedCrypto ? -320 : 0 }}
