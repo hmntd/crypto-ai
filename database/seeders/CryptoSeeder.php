@@ -87,12 +87,6 @@ class CryptoSeeder extends Seeder
                 'image_url' => 'https://assets.coingecko.com/coins/images/12171/large/polkadot.png',
             ],
             [
-                'name' => 'Polygon',
-                'symbol' => 'MATIC',
-                'api_id' => 'matic-network',
-                'image_url' => 'https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png',
-            ],
-            [
                 'name' => 'Litecoin',
                 'symbol' => 'LTC',
                 'api_id' => 'litecoin',

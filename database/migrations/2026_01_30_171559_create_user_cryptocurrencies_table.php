@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('user_cryptocurrencies', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('cryptocurrency_id')->constrained('cryptocurrencies');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('cryptocurrency_id')->constrained('cryptocurrencies')->onDelete('cascade');
             $table->timestamps();
         });
     }

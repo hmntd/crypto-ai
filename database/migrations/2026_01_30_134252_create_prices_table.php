@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('prices', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('cryptocurrency_id')->constrained('cryptocurrencies');
+            $table->foreignId('cryptocurrency_id')->constrained('cryptocurrencies')->onDelete('cascade');
             $table->double('price');
             $table->timestamp('recorded_at');
             $table->timestamps();

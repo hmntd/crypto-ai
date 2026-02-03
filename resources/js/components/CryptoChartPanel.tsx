@@ -21,7 +21,7 @@ export function CryptoChartPanel({ crypto, onClose }: Props) {
     const [source, setSource] = useState<'llm' | 'cache' | null>(null)
 
     const runAnalysis = async () => {
-    console.log('crypto', crypto);
+        console.log('crypto', crypto);
 
         if (loading) return
 
@@ -49,7 +49,7 @@ export function CryptoChartPanel({ crypto, onClose }: Props) {
             : 'text-yellow-600'
 
     return (
-        <div className="flex h-full min-h-0 flex-col overflow-y-auto custom-scroll">
+        <div className="flex h-full flex-col p-4 overflow-y-auto custom-scroll">
 
             <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -73,7 +73,7 @@ export function CryptoChartPanel({ crypto, onClose }: Props) {
                 </button>
             </div>
 
-            <div className="flex-1 rounded-xl border bg-muted/30">
+            <div className="h-[250px] shrink-0 rounded-xl border bg-muted/30">
                 {crypto.prices ? (
                     <PriceChart prices={crypto.prices} />
                 ) : (
@@ -84,7 +84,7 @@ export function CryptoChartPanel({ crypto, onClose }: Props) {
             </div>
 
 
-            <div className="mt-4 rounded-xl border p-4 space-y-3">
+            <div className="mt-4 rounded-xl border p-4 space-y-3 bg-card">
 
                 <div className="flex items-center justify-between">
                     <div className="text-sm font-semibold">
@@ -143,6 +143,8 @@ export function CryptoChartPanel({ crypto, onClose }: Props) {
                         Click "Ask AI" to get a trading recommendation based on full historical data.
                     </div>
                 )}
+
+                <div className="h-4 shrink-0" />
 
             </div>
         </div>

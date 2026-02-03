@@ -24,49 +24,56 @@ export default function Dashboard() {
         <AppLayout>
             <Head title="Crypto Dashboard" />
 
-            <div className="relative flex h-[calc(100vh-4rem)] overflow-hidden">
+            <div className="flex h-[calc(100vh-4rem)] w-full overflow-hidden bg-background">
+                <div className="flex-1 flex relative overflow-hidden">
 
-                <div className="flex-1 overflow-y-auto custom-scroll">
                     <motion.div
-                        className="w-full max-w-4xl mx-auto flex flex-col gap-3 p-6"
+                        animate={{
+                            width: selectedCrypto ? (window.innerWidth < 768 ? '100%' : 320) : '100%'
+                        }}
+                        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                        className="border-r bg-card/50 overflow-y-auto custom-scroll shrink-0"
                     >
-                        <h1 className="mb-4 text-2xl font-semibold">
-                            Tracked Cryptocurrencies
-                        </h1>
-
-                        {isLoading ? (
-                            <div className="text-center py-10">Loading prices...</div>
-                        ) : (
-                            cryptos.map((crypto) => (
-                                <CryptoRow
-                                    key={crypto.id}
-                                    crypto={crypto}
-                                    onClick={() => setSelectedCrypto(crypto)}
-                                />
-                            ))
-                        )}
+                        <div className={`p-6 transition-all duration-500 ease-in-out
+                                            ${selectedCrypto ? 'md:ml-0' : 'max-w-4xl mx-auto'}`}>
+                            <h1 className="mb-6 text-2xl font-semibold">Tracked Cryptocurrencies</h1>
+                            <div className="flex flex-col gap-3">
+                                {cryptos.map((crypto) => (
+                                    <CryptoRow
+                                        key={crypto.id}
+                                        crypto={crypto}
+                                        onClick={() => setSelectedCrypto(crypto)}
+                                        isCollapsed={!!selectedCrypto && window.innerWidth >= 768}
+                                        isSelected={selectedCrypto?.id === crypto.id}
+                                    />
+                                ))}
+                            </div>
+                        </div>
                     </motion.div>
-                </div>
 
-                <AnimatePresence>
-                    {selectedCrypto && (
-                        <motion.div
-                            className="
-                                w-[520px] shrink-0 border-l bg-background shadow-xl
-                                sticky top-0 h-[calc(100vh-4rem)]
-                            "
-                            initial={{ x: 520 }}
-                            animate={{ x: 0 }}
-                            exit={{ x: 520 }}
-                            transition={{ type: 'spring', stiffness: 260, damping: 25 }}
-                        >
-                            <CryptoChartPanel
-                                crypto={selectedCrypto}
-                                onClose={() => setSelectedCrypto(null)}
-                            />
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                    <AnimatePresence mode="popLayout">
+                        {selectedCrypto && (
+                            <motion.div
+                                key={selectedCrypto.id}
+                                layout
+                                initial={{ opacity: 0, x: window.innerWidth < 768 ? '100%' : 50 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: window.innerWidth < 768 ? '100%' : 50 }}
+                                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                                className={`
+                                    bg-background overflow-y-auto custom-scroll z-50
+                                    ${window.innerWidth < 768
+                                        ? 'fixed inset-0 top-16 h-[calc(100vh-4rem)] w-full'
+                                        : 'flex-1 h-full'}
+                                `}>
+                                <CryptoChartPanel
+                                    crypto={selectedCrypto}
+                                    onClose={() => setSelectedCrypto(null)}
+                                />
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
             </div>
 
         </AppLayout>
