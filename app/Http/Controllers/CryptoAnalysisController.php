@@ -17,27 +17,45 @@ class CryptoAnalysisController extends Controller
         protected CryptoAnalysisService $analysisService
     ) {}
 
+    /**
+     * Return a list of cryptocurrencies with their current and yesterday prices.
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(): JsonResponse
     {
         $cryptos = Cryptocurrency::with(['prices' => function ($query) {
-            $query->latest('recorded_at')->limit(2);
+            $query->orderBy('recorded_at', 'desc');
         }])->get()->map(function ($crypto) {
-            $latest = $crypto->prices->first();
-            $previous = $crypto->prices->last();
+
+            $history = $crypto->prices;
+            $latest = $history->first();
+            $previous = $history->skip(1)->first();
 
             return [
                 'id' => $crypto->id,
-                'symbol' => $crypto->symbol,
                 'name' => $crypto->name,
+                'symbol' => $crypto->symbol,
                 'image' => $crypto->image_url,
-                'priceToday' => $latest?->price ?? 0,
-                'priceYesterday' => $previous?->price ?? 0,
+                'priceToday' => $latest ? (float) $latest->price : 0,
+                'priceYesterday' => $previous ? (float) $previous->price : 0,
+                'prices' => $history->map(fn($p) => [
+                    'price' => (float) $p->price,
+                    'date' => $p->recorded_at->toDateTimeString(),
+                ]),
             ];
         });
 
         return response()->json($cryptos);
     }
 
+    /**
+     * Return the AI analysis for a given cryptocurrency.
+     * 
+     * @param Cryptocurrency $crypto
+     * @return JsonResponse
+     * @throws \Throwable
+     */
     public function show(Cryptocurrency $crypto): JsonResponse
     {
         $cacheKey = $this->cacheKey($crypto->id);
@@ -75,6 +93,12 @@ class CryptoAnalysisController extends Controller
         }
     }
 
+    /**
+     * Returns a cache key for the given cryptocurrency ID.
+     *
+     * @param int $cryptoId
+     * @return string
+     */
     protected function cacheKey(int $cryptoId): string
     {
         return "crypto_ai_analysis:{$cryptoId}";

@@ -24,35 +24,40 @@ export default function Dashboard() {
         <AppLayout>
             <Head title="Crypto Dashboard" />
 
-            <div className="relative flex h-[calc(100vh-4rem)]">
-                <motion.div
-                    className="flex w-full max-w-4xl flex-col gap-3 p-6 mx-auto"
-                    animate={{ x: selectedCrypto ? -320 : 0 }}
-                >
-                    <h1 className="mb-4 text-2xl font-semibold">
-                        Tracked Cryptocurrencies
-                    </h1>
+            <div className="relative flex h-[calc(100vh-4rem)] overflow-hidden">
 
-                    {isLoading ? (
-                        <div className="text-center py-10">Loading prices...</div>
-                    ) : (
-                        cryptos.map((crypto) => (
-                            <CryptoRow
-                                key={crypto.id}
-                                crypto={crypto}
-                                onClick={() => setSelectedCrypto(crypto)}
-                            />
-                        ))
-                    )}
-                </motion.div>
+                <div className="flex-1 overflow-y-auto custom-scroll">
+                    <motion.div
+                        className="w-full max-w-4xl mx-auto flex flex-col gap-3 p-6"
+                    >
+                        <h1 className="mb-4 text-2xl font-semibold">
+                            Tracked Cryptocurrencies
+                        </h1>
+
+                        {isLoading ? (
+                            <div className="text-center py-10">Loading prices...</div>
+                        ) : (
+                            cryptos.map((crypto) => (
+                                <CryptoRow
+                                    key={crypto.id}
+                                    crypto={crypto}
+                                    onClick={() => setSelectedCrypto(crypto)}
+                                />
+                            ))
+                        )}
+                    </motion.div>
+                </div>
 
                 <AnimatePresence>
                     {selectedCrypto && (
                         <motion.div
-                            className="absolute right-0 top-0 h-full w-[380px] border-l bg-background p-4 shadow-xl"
-                            initial={{ x: 400 }}
+                            className="
+                                w-[520px] shrink-0 border-l bg-background shadow-xl
+                                sticky top-0 h-[calc(100vh-4rem)]
+                            "
+                            initial={{ x: 520 }}
                             animate={{ x: 0 }}
-                            exit={{ x: 400 }}
+                            exit={{ x: 520 }}
                             transition={{ type: 'spring', stiffness: 260, damping: 25 }}
                         >
                             <CryptoChartPanel
@@ -63,6 +68,7 @@ export default function Dashboard() {
                     )}
                 </AnimatePresence>
             </div>
+
         </AppLayout>
     )
 }

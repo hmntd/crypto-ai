@@ -9,6 +9,13 @@ class CoingeckoService
 {
     protected string $baseUrl = 'https://api.coingecko.com/api/v3';
 
+    /**
+     * Fetches the current prices for the given list of CoinGecko IDs
+     *
+     * @param array $coingeckoIds The list of CoinGecko IDs to fetch prices for
+     *
+     * @return array The current prices for the given list of CoinGecko IDs
+     */
     public function getTodayPrices(array $coingeckoIds): array
     {
         return Http::withHeaders([
@@ -21,6 +28,15 @@ class CoingeckoService
             ->json();
     }
 
+    /**
+     * Fetches the historical prices for the given CoinGecko ID
+     *
+     * @param string $coingeckoId The CoinGecko ID to fetch historical prices for
+     *
+     * @return array The historical prices for the given CoinGecko ID
+     *
+     * @throws \Illuminate\Http\ClientException If the request to CoinGecko fails
+     */
     public function getHistoricalPrices(string $coingeckoId): array
     {
         $url = rtrim($this->baseUrl, '/') . "/coins/" . trim($coingeckoId) . "/market_chart";

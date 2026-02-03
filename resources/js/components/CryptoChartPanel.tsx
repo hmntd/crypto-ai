@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import axios from 'axios'
+import { Button } from './ui/button'
+import { PriceChart } from './PriceChart'
 
 type Props = {
     crypto: any
@@ -19,6 +21,8 @@ export function CryptoChartPanel({ crypto, onClose }: Props) {
     const [source, setSource] = useState<'llm' | 'cache' | null>(null)
 
     const runAnalysis = async () => {
+    console.log('crypto', crypto);
+
         if (loading) return
 
         setLoading(true)
@@ -45,7 +49,7 @@ export function CryptoChartPanel({ crypto, onClose }: Props) {
             : 'text-yellow-600'
 
     return (
-        <div className="flex h-full flex-col">
+        <div className="flex h-full min-h-0 flex-col overflow-y-auto custom-scroll">
 
             <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -69,9 +73,16 @@ export function CryptoChartPanel({ crypto, onClose }: Props) {
                 </button>
             </div>
 
-            <div className="flex-1 rounded-xl border bg-muted/30 flex items-center justify-center text-muted-foreground">
-                Price Chart (TradingView / Recharts)
+            <div className="flex-1 rounded-xl border bg-muted/30">
+                {crypto.prices ? (
+                    <PriceChart prices={crypto.prices} />
+                ) : (
+                    <div className="h-full flex items-center justify-center text-muted-foreground">
+                        Loading chart...
+                    </div>
+                )}
             </div>
+
 
             <div className="mt-4 rounded-xl border p-4 space-y-3">
 
@@ -80,13 +91,13 @@ export function CryptoChartPanel({ crypto, onClose }: Props) {
                         AI Recommendation
                     </div>
 
-                    <button
+                    <Button
                         onClick={runAnalysis}
                         disabled={loading}
-                        className="rounded-lg bg-primary px-3 py-1 text-sm text-white hover:opacity-90 disabled:opacity-50"
+                        className="text-sm"
                     >
                         {loading ? 'Analyzing...' : 'Ask AI'}
-                    </button>
+                    </Button>
                 </div>
 
                 {error && (
