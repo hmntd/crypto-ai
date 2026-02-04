@@ -2,8 +2,8 @@ import { Head } from '@inertiajs/react'
 import AppLayout from '@/layouts/app-layout'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import { CryptoRow } from '@/components/CryptoRow'
-import { CryptoChartPanel } from '@/components/CryptoChartPanel'
+import { CryptoRow } from '@/components/crypto-row'
+import { CryptoChartPanel } from '@/components/crypto-chart-panel'
 
 export default function Dashboard() {
     const [cryptos, setCryptos] = useState<any[]>([])

@@ -8,6 +8,7 @@ export type User = {
     created_at: string;
     updated_at: string;
     [key: string]: unknown;
+    notification_settings: NotificationSetting[];
 };
 
 export type Auth = {
@@ -21,4 +22,15 @@ export type TwoFactorSetupData = {
 
 export type TwoFactorSecretKey = {
     secretKey: string;
+};
+
+export type NotificationSetting = {
+    id: number;
+    user_id: number;
+    slack_user_id: string;
+    telegram_user_id: string;
+    notifications_enabled: boolean;
+    scheduled_time: string;
+    created_at: string;
+    updated_at: string;
 };

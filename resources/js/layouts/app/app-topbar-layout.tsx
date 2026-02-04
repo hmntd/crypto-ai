@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { Link } from '@inertiajs/react'
 import AppLogo from '@/components/app-logo'
-import { TopbarUser } from '@/components/TopbarUser'
+import { TopbarUser } from '@/components/topbar-user'
 
 type Props = {
     children: ReactNode
