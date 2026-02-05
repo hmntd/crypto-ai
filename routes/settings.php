@@ -20,6 +20,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('settings/integrations', [IntegrationController::class, 'edit'])->name('integrations.edit');
     Route::patch('settings/integrations', [IntegrationController::class, 'update'])->name('integrations.update');
 
+    Route::post('settings/integrations/test/{provider}', [IntegrationController::class, 'testConnection'])
+        ->name('settings.integrations.test');
+
+    Route::post('settings/integrations/send/{provider}', [IntegrationController::class, 'sendMessage'])
+        ->name('settings.integrations.send');
+
     Route::get('settings/password', [PasswordController::class, 'edit'])->name('user-password.edit');
 
     Route::put('settings/password', [PasswordController::class, 'update'])

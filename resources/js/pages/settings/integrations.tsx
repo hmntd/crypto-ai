@@ -30,6 +30,44 @@ export default function Integrations() {
 
     const [isEnabled, setIsEnabled] = useState(!!settings.notifications_enabled);
 
+    const [testing, setTesting] = useState<string | null>(null);
+
+    const handleTest = async (provider: 'telegram' | 'slack') => {
+        const inputElement = document.getElementById(`${provider}_user_id`) as HTMLInputElement;
+        const value = inputElement?.value;
+
+        if (!value) {
+            alert(`Please enter a ${provider} ID first.`);
+            return;
+        }
+
+        setTesting(provider);
+
+        try {
+            const response = await fetch(`/settings/integrations/test/${provider}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content || '',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ key: value }),
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('✅ ' + result.message);
+            } else {
+                alert('❌ ' + result.message);
+            }
+        } catch (e) {
+            alert('🚫 Connection failed. Could not reach the server.');
+        } finally {
+            setTesting(null);
+        }
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Integrations" />
@@ -76,26 +114,56 @@ export default function Integrations() {
                                     </div>
 
                                     <div className="grid gap-2">
-                                        <Label htmlFor="telegram_user_id">Telegram User ID</Label>
-                                        <Input
-                                            id="telegram_user_id"
-                                            name="telegram_user_id"
-                                            className="mt-1 block w-full"
-                                            defaultValue={settings.telegram_user_id}
-                                            placeholder="e.g. 123456789"
-                                        />
+                                        <div className="flex flex-col gap-1">
+                                            <Label htmlFor="telegram_user_id">Telegram User ID</Label>
+                                            <p className="text-xs text-muted-foreground">
+                                                Get your ID by sending a message to <span className="font-medium text-foreground">@userinfobot</span>
+                                            </p>
+                                        </div>
+                                        <div className="relative">
+                                            <Input
+                                                id="telegram_user_id"
+                                                name="telegram_user_id"
+                                                className="block w-full pr-10"
+                                                defaultValue={settings.telegram_user_id ?? ''}
+                                                placeholder="e.g. 123456789"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => handleTest('telegram')}
+                                                disabled={testing === 'telegram'}
+                                                className="absolute right-1.5 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-md border bg-muted text-xs font-bold transition-all hover:bg-primary hover:text-primary-foreground cursor-pointer disabled:opacity-50"
+                                            >
+                                                {testing === 'telegram' ? '...' : '!'}
+                                            </button>
+                                        </div>
                                         <InputError message={errors.telegram_user_id} />
                                     </div>
 
                                     <div className="grid gap-2">
-                                        <Label htmlFor="slack_user_id">Slack User ID</Label>
-                                        <Input
-                                            id="slack_user_id"
-                                            name="slack_user_id"
-                                            className="mt-1 block w-full"
-                                            defaultValue={settings.slack_user_id}
-                                            placeholder="e.g. 123456789"
-                                        />
+                                        <div className="flex flex-col gap-1">
+                                            <Label htmlFor="slack_user_id">Slack User ID</Label>
+                                            <p className="text-xs text-muted-foreground">
+                                                Profile &gt; More (three dots) &gt; <span className="font-medium text-foreground">Copy member ID</span>
+                                            </p>
+                                        </div>
+                                        <div className="relative">
+                                            <Input
+                                                id="slack_user_id"
+                                                name="slack_user_id"
+                                                className="block w-full pr-10"
+                                                defaultValue={settings.slack_user_id ?? ''}
+                                                placeholder="e.g. U12345678"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => handleTest('slack')}
+                                                disabled={testing === 'slack'}
+                                                className="absolute right-1.5 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-md border bg-muted text-xs font-bold transition-all hover:bg-primary hover:text-primary-foreground cursor-pointer disabled:opacity-50"
+                                            >
+                                                {testing === 'slack' ? '...' : '!'}
+                                            </button>
+                                        </div>
                                         <InputError message={errors.slack_user_id} />
                                     </div>
 
