@@ -35,11 +35,11 @@ export function TopbarUser() {
 
                 <DropdownMenuItem
                     asChild
-                    className="text-red-600 cursor-pointer"
+                    className="text-red-600 cursor-pointer w-full"
                 >
-                    <a href="/logout" method="post" class="flex items-center gap-2 w-full">
+                    <Link href="/logout" method="post" class="flex items-center gap-2 w-full">
                         Logout
-                    </a>
+                    </Link>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

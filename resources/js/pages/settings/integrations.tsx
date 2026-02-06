@@ -10,6 +10,8 @@ import SettingsLayout from '@/layouts/settings/layout';
 import type { BreadcrumbItem, SharedData } from '@/types';
 import IntegrationController from '@/actions/App/Http/Controllers/Settings/IntegrationController';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
+
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -37,7 +39,15 @@ export default function Integrations() {
         const value = inputElement?.value;
 
         if (!value) {
-            alert(`Please enter a ${provider} ID first.`);
+            toast.error(`Please enter a ${provider} ID first.`, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
             return;
         }
 
@@ -57,12 +67,36 @@ export default function Integrations() {
             const result = await response.json();
 
             if (result.success) {
-                alert('✅ ' + result.message);
+                toast.success(result.message, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: true,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
             } else {
-                alert('❌ ' + result.message);
+                toast.error(result.message, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: true,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
             }
         } catch (e) {
-            alert('🚫 Connection failed. Could not reach the server.');
+            toast.error('Connection failed. Could not reach the server.', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            })
         } finally {
             setTesting(null);
         }
