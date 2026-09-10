@@ -6,23 +6,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Price extends Model
+class AiAnalysisCache extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'cryptocurrency_id',
-        'price',
-        'recorded_at',
+        'analysis',
+        'expires_at',
     ];
 
     protected $casts = [
-        'recorded_at' => 'datetime',
+        'analysis' => 'array',
+        'expires_at' => 'datetime',
     ];
 
     public function cryptocurrency(): BelongsTo

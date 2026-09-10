@@ -2,15 +2,13 @@ import AppLogoIcon from './app-logo-icon';
 
 export default function AppLogo() {
     return (
-        <>
-            <div className="flex aspect-square size-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
-                <AppLogoIcon className="size-10 fill-current text-white dark:text-black" />
+        <div className="flex items-center gap-2.5">
+            <div className="flex aspect-square size-9 items-center justify-center rounded-xl bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-950 shadow-xs border border-neutral-800 dark:border-neutral-200 transition-colors">
+                <AppLogoIcon className="h-4 w-auto fill-current" />
             </div>
-            <div className="ml-1 grid flex-1 text-left text-sm">
-                <span className="mb-0.5 truncate leading-tight font-semibold">
-                    Crypto AI
-                </span>
-            </div>
-        </>
+            <span className="font-bold text-base tracking-tight text-neutral-900 dark:text-neutral-50">
+                Crypto AI
+            </span>
+        </div>
     );
 }

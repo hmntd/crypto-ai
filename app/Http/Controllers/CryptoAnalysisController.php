@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AiAnalysisCache;
 use App\Models\Cryptocurrency;
 use App\Services\CryptoAnalysisService;
 use Illuminate\Http\JsonResponse;
@@ -11,22 +12,26 @@ use Illuminate\Support\Facades\Log;
 
 class CryptoAnalysisController extends Controller
 {
-    protected int $cacheTtl = 900;
+    protected int $cacheTtlMinutes = 30;
 
     public function __construct(
         protected CryptoAnalysisService $analysisService
     ) {}
 
     /**
-     * Return a list of cryptocurrencies with their current and yesterday prices.
+     * Return a list of cryptocurrencies with their current and yesterday prices, plus favourite status.
      * 
+     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
+        $user = $request->user();
+        $favouriteIds = $user ? $user->favouriteCryptos()->pluck('cryptocurrencies.id')->toArray() : [];
+
         $cryptos = Cryptocurrency::with(['prices' => function ($query) {
             $query->orderBy('recorded_at', 'desc');
-        }])->get()->map(function ($crypto) {
+        }])->get()->map(function ($crypto) use ($favouriteIds) {
 
             $history = $crypto->prices;
             $latest = $history->first();
@@ -39,6 +44,7 @@ class CryptoAnalysisController extends Controller
                 'image' => $crypto->image_url,
                 'priceToday' => $latest ? (float) $latest->price : 0,
                 'priceYesterday' => $previous ? (float) $previous->price : 0,
+                'is_favourite' => in_array($crypto->id, $favouriteIds),
                 'prices' => $history->map(fn($p) => [
                     'price' => (float) $p->price,
                     'date' => $p->recorded_at->toDateTimeString(),
@@ -50,7 +56,7 @@ class CryptoAnalysisController extends Controller
     }
 
     /**
-     * Return the AI analysis for a given cryptocurrency.
+     * Return the AI analysis for a given cryptocurrency using DB caching.
      * 
      * @param Cryptocurrency $crypto
      * @return JsonResponse
@@ -58,19 +64,30 @@ class CryptoAnalysisController extends Controller
      */
     public function show(Cryptocurrency $crypto): JsonResponse
     {
-        $cacheKey = $this->cacheKey($crypto->id);
-
         try {
-            if (Cache::has($cacheKey)) {
+            // Check Database Cache
+            $cached = AiAnalysisCache::where('cryptocurrency_id', $crypto->id)
+                ->where('expires_at', '>', now())
+                ->first();
+
+            if ($cached && !empty($cached->analysis)) {
                 return response()->json([
-                    'source' => 'cache',
-                    'data' => Cache::get($cacheKey),
+                    'source' => 'db_cache',
+                    'data' => $cached->analysis,
                 ]);
             }
 
+            // Generate fresh analysis from AI Service
             $result = $this->analysisService->analyze($crypto);
 
-            Cache::put($cacheKey, $result, $this->cacheTtl);
+            // Store in Database Cache
+            AiAnalysisCache::updateOrCreate(
+                ['cryptocurrency_id' => $crypto->id],
+                [
+                    'analysis' => $result,
+                    'expires_at' => now()->addMinutes($this->cacheTtlMinutes),
+                ]
+            );
 
             return response()->json([
                 'source' => 'llm',
@@ -91,16 +108,5 @@ class CryptoAnalysisController extends Controller
                 ],
             ], 500);
         }
-    }
-
-    /**
-     * Returns a cache key for the given cryptocurrency ID.
-     *
-     * @param int $cryptoId
-     * @return string
-     */
-    protected function cacheKey(int $cryptoId): string
-    {
-        return "crypto_ai_analysis:{$cryptoId}";
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CryptoAnalysisController;
+use App\Http\Controllers\FavouriteCryptoController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -25,6 +26,11 @@ Route::prefix('api')->middleware(['auth', 'verified'])->group(function () {
         CryptoAnalysisController::class,
         'show'
     ])->name('api.cryptos.ai-analysis');
+
+    Route::post('/cryptos/{crypto}/favourite', [
+        FavouriteCryptoController::class,
+        'toggle'
+    ])->name('api.cryptos.favourite');
 });
 
 require __DIR__ . '/settings.php';

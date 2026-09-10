@@ -54,5 +54,7 @@ class FetchDailyCryptoPrices extends Command
         }
 
         $this->info('Daily crypto prices fetched successfully.');
+
+        $this->call('app:send-favourite-coin-notifications');
     }
 }

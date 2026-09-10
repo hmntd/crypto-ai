@@ -9,6 +9,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -22,6 +24,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'can_favourite_coins',
         'password',
     ];
 
@@ -47,6 +50,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'can_favourite_coins' => 'boolean',
             'two_factor_confirmed_at' => 'datetime',
         ];
     }
@@ -54,5 +58,10 @@ class User extends Authenticatable
     public function notificationSettings(): HasMany
     {
         return $this->hasMany(NotificationSetting::class);
+    }
+
+    public function favouriteCryptos(): BelongsToMany
+    {
+        return $this->belongsToMany(Cryptocurrency::class, 'user_cryptocurrencies', 'user_id', 'cryptocurrency_id')->withTimestamps();
     }
 }

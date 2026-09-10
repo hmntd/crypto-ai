@@ -1,5 +1,6 @@
+import { useState, useEffect } from 'react';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-react';
+import { BookOpen, Clock, Folder, Home, LayoutGrid, Menu, Moon, Search, Sun } from 'lucide-react';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -30,6 +31,7 @@ import {
 import { UserMenuContent } from '@/components/user-menu-content';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { useInitials } from '@/hooks/use-initials';
+import { useAppearance } from '@/hooks/use-appearance';
 import { cn, toUrl } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem, NavItem, SharedData } from '@/types';
@@ -41,6 +43,11 @@ type Props = {
 };
 
 const mainNavItems: NavItem[] = [
+    {
+        title: 'Home',
+        href: '/',
+        icon: Home,
+    },
     {
         title: 'Dashboard',
         href: dashboard(),
@@ -60,6 +67,49 @@ const rightNavItems: NavItem[] = [
         icon: BookOpen,
     },
 ];
+
+function TopbarClock() {
+    const [time, setTime] = useState<string>('');
+
+    useEffect(() => {
+        const update = () => {
+            const now = new Date();
+            setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+        };
+        update();
+        const timer = setInterval(update, 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    if (!time) return null;
+
+    return (
+        <div className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-semibold text-neutral-700 dark:text-neutral-200 bg-neutral-100 dark:bg-neutral-800 rounded-full border border-neutral-200 dark:border-neutral-700 shadow-xs">
+            <Clock className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
+            <span>{time}</span>
+        </div>
+    );
+}
+
+function ThemeToggle() {
+    const { resolvedAppearance, updateAppearance } = useAppearance();
+
+    return (
+        <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => updateAppearance(resolvedAppearance === 'dark' ? 'light' : 'dark')}
+            title={`Switch to ${resolvedAppearance === 'dark' ? 'Light' : 'Dark'} mode`}
+            className="h-9 w-9 rounded-full cursor-pointer text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+        >
+            {resolvedAppearance === 'dark' ? (
+                <Sun className="h-4 w-4 text-amber-400" />
+            ) : (
+                <Moon className="h-4 w-4 text-slate-700" />
+            )}
+        </Button>
+    );
+}
 
 const activeItemStyles =
     'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100';
@@ -176,7 +226,9 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                         </NavigationMenu>
                     </div>
 
-                    <div className="ml-auto flex items-center space-x-2">
+                    <div className="ml-auto flex items-center space-x-3">
+                        <TopbarClock />
+                        <ThemeToggle />
                         <div className="relative flex items-center space-x-1">
                             <Button
                                 variant="ghost"

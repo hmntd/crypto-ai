@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cryptocurrencies', function (Blueprint $table) {
+        Schema::create('ai_analysis_caches', function (Blueprint $table) {
             $table->id();
-            $table->string('symbol');
-            $table->string('name');
-            $table->string('image_url')->nullable();
-            $table->char('api_id', 16)->unique();
+            $table->foreignId('cryptocurrency_id')->constrained('cryptocurrencies')->onDelete('cascade');
+            $table->json('analysis');
+            $table->timestamp('expires_at')->nullable();
             $table->timestamps();
+
+            $table->index(['cryptocurrency_id', 'expires_at']);
         });
     }
 
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cryptocurrencies');
+        Schema::dropIfExists('ai_analysis_caches');
     }
 };

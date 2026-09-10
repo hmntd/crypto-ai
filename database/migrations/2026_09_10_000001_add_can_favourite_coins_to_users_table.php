@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cryptocurrencies', function (Blueprint $table) {
-            $table->id();
-            $table->string('symbol');
-            $table->string('name');
-            $table->string('image_url')->nullable();
-            $table->char('api_id', 16)->unique();
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->boolean('can_favourite_coins')->default(true)->after('email');
         });
     }
 
@@ -26,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cryptocurrencies');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('can_favourite_coins');
+        });
     }
 };
